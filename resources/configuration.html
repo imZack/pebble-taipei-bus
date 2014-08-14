@@ -29,7 +29,10 @@ vim: sw=2 ts=2 expandtab ai
     .form-align-right {width: 58%; text-align: left; display: inline-block;}
     </style>
     <script>
-
+      for(var i in localStorage)
+      {
+          console.log(localStorage[i]);
+      }
       var config = {}; //_CONFIG_;
       var busList = [];
 
