@@ -30,7 +30,7 @@ vim: sw=2 ts=2 expandtab ai
     </style>
     <script>
       var config = {}; //_CONFIG_;
-      var busList = localStorage["busList"];
+      var busList = localStorage["busList"] || [];
 
       function put_config() {
         refresh_list();
