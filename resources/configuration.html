@@ -29,8 +29,15 @@ vim: sw=2 ts=2 expandtab ai
     .form-align-right {width: 58%; text-align: left; display: inline-block;}
     </style>
     <script>
-      var config = {}; //_CONFIG_;
-      var busList = localStorage["busList"] || [];
+      var config = {
+        busList: []
+      };
+
+      if(window.location.hash) {
+        var hash = window.location.hash.substring(1);
+        var obj = JSON.parse(decodeURIComponent(hash));
+        config = obj;
+      }
 
       function put_config() {
         refresh_list();
@@ -59,8 +66,6 @@ vim: sw=2 ts=2 expandtab ai
             }
           }
         }
-        config.busList = busList;
-        console.log(JSON.stringify(config));
         return window.location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
       }
 
@@ -85,12 +90,12 @@ vim: sw=2 ts=2 expandtab ai
           }
         }
 
-        busList.push(bus);
+        config.busList.push(bus);
         refresh_list();
       }
 
       function del_bus(bus) {
-        busList.splice(busList.indexOf(bus), 1);
+        config.busList.splice(config.busList.indexOf(bus), 1);
         refresh_list();
       }
 
@@ -101,8 +106,8 @@ vim: sw=2 ts=2 expandtab ai
           return "<span onclick=\"del_bus(" + bus + ")\">[remove]</span>";
         };
 
-        for (var i = busList.length - 1; i >= 0; i--) {
-          var bus = busList[i];
+        for (var i = config.busList.length - 1; i >= 0; i--) {
+          var bus = config.busList[i];
           html += "<div>" + bus.direction + " - " + bus.name + " - " + bus.stop + "   " + removeButton("busList[" + i + "]") + "</div>";
         };
         e.innerHTML = html;
