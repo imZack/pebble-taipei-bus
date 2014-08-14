@@ -6,6 +6,7 @@ vim: sw=2 ts=2 expandtab ai
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <style>
     /*!
     Pure v0.5.0
@@ -37,6 +38,7 @@ vim: sw=2 ts=2 expandtab ai
         var hash = window.location.hash.substring(1);
         var obj = JSON.parse(decodeURIComponent(hash));
         config = obj;
+        config.busList = obj.busList || [];
       }
 
       function put_config() {
