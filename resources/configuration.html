@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!-- -*-coding: utf-8 -*-
+vim: sw=2 ts=2 expandtab ai
+-->
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    /*!
+    Pure v0.5.0
+    Copyright 2014 Yahoo! Inc. All rights reserved.
+    Licensed under the BSD License.
+    https://github.com/yui/pure/blob/master/LICENSE.md
+    */
+    .pure-button{display:inline-block;*display:inline;zoom:1;line-height:normal;white-space:nowrap;vertical-align:baseline;text-align:center;cursor:pointer;-webkit-user-drag:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.pure-button::-moz-focus-inner{padding:0;border:0}.pure-button{font-family:inherit;font-size:100%;*font-size:90%;*overflow:visible;padding:.5em 1em;color:#444;color:rgba(0,0,0,.8);*color:#444;border:1px solid #999;border:0 rgba(0,0,0,0);background-color:#E6E6E6;text-decoration:none;border-radius:2px}.pure-button-hover,.pure-button:hover,.pure-button:focus{filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);background-image:-webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0,0,0,.05)),to(rgba(0,0,0,.1)));background-image:-webkit-linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));background-image:-moz-linear-gradient(top,rgba(0,0,0,.05) 0,rgba(0,0,0,.1));background-image:-o-linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));background-image:linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1))}.pure-button:focus{outline:0}.pure-button-active,.pure-button:active{box-shadow:0 0 0 1px rgba(0,0,0,.15) inset,0 0 6px rgba(0,0,0,.2) inset}.pure-button[disabled],.pure-button-disabled,.pure-button-disabled:hover,.pure-button-disabled:focus,.pure-button-disabled:active{border:0;background-image:none;filter:progid:DXImageTransform.Microsoft.gradient(enabled=false);filter:alpha(opacity=40);-khtml-opacity:.4;-moz-opacity:.4;opacity:.4;cursor:not-allowed;box-shadow:none}.pure-button-hidden{display:none}.pure-button::-moz-focus-inner{padding:0;border:0}.pure-button-primary,.pure-button-selected,a.pure-button-primary,a.pure-button-selected{background-color:#0078e7;color:#fff}
+    body { background-color: white; text-align: center; color: black;}
+    h1 { margin: 0 }
+    small { color: black }
+    a { color: black }
+    .submit { width: 93%; margin: 0.4em }
+    .param { display: inline-table; width: 95%; height: 3em ;}
+    .label, .checkbox { display: table-cell; vertical-align: middle }
+    .label { text-align: left }
+    .checkbox { text-align: right; width: 1.5em; height: 1.5em }
+    .example { width: 75%; display: inline-block; text-align: left; font-size: 0.6em }
+    input[type="text"] {width: 98%}
+    .form-align-left {width: 38%; text-align: right; display: inline-block; margin-right: 10px;}
+    .form-align-right {width: 58%; text-align: left; display: inline-block;}
+    </style>
+    <script>
+
+      var config = {}; //_CONFIG_;
+      var busList = [];
+
+      function put_config() {
+        refresh_list();
+        for (var param in config) {
+          var element = document.getElementById(param);
+          if (element) {
+            if (typeof config[param] === 'boolean') {
+              element.checked = config[param];
+            } else {
+              element.value = config[param];
+            }
+          }
+        }
+      }
+
+      function get_config() {
+        var omit = ["save", "addBus", "directionBack", "directionGo", "stopName", "busName"];
+        var form = document.getElementById('config_form');
+        for (config = {}, i = 0; i < form.length ; i++) {
+          id = form[i].id;
+          if (omit.indexOf(id) === -1) {
+            if (form[i].type === 'checkbox') {
+              config[id] = form[i].checked;
+            } else {
+              config[id] = form[i].value;
+            }
+          }
+        }
+        config.busList = busList;
+        console.log(JSON.stringify(config));
+        return window.location.href = "pebblejs://close#" + encodeURIComponent(JSON.stringify(config));
+      }
+
+      function toggle_visibility(id) {
+        var e = document.getElementById(id);
+        if(e.style.display == 'block')
+          e.style.display = 'none';
+        else
+          e.style.display = 'block';
+      }
+
+      function add_bus() {
+        var bus = {};
+        // get bus
+        bus.name = document.getElementById('busName').value;
+        bus.stop = document.getElementById('stopName').value;
+        
+        var elements = document.getElementsByName("direction");
+        for (var i=0, len=elements.length; i<len; ++i) {
+          if (elements[i].checked) {
+            bus.direction = elements[i].value;
+          }
+        }
+
+        busList.push(bus);
+        refresh_list();
+      }
+
+      function del_bus(bus) {
+        busList.splice(busList.indexOf(bus), 1);
+        refresh_list();
+      }
+
+      function refresh_list() {
+        var e = document.getElementById('busNameList');
+        var html = "";
+        var removeButton = function(bus) {
+          return "<span onclick=\"del_bus(" + bus + ")\">[remove]</span>";
+        };
+
+        for (var i = busList.length - 1; i >= 0; i--) {
+          var bus = busList[i];
+          html += "<div>" + bus.direction + " - " + bus.name + " - " + bus.stop + "   " + removeButton("busList[" + i + "]") + "</div>";
+        };
+        e.innerHTML = html;
+      }
+    </script>
+  </head>
+  <body onload="put_config();">
+    <div class="center">
+      <h1>Taipei Bus</h1>
+      <small>v0.0.1 by YuLun</small>
+      <hr size="1" />
+      <form action="javascript: get_config();" id="config_form">
+          <div class="param">
+            <div class="form-align-left">
+              Bus Name:
+            </div>
+            <div class="form-align-right">
+              <input id="busName" type="text" placeholder="642">
+            </div>
+          </div>
+          <div class="param">
+            <div class="form-align-left">
+              Stop Name:
+            </div>
+            <div class="form-align-right">
+              <input id="stopName" type="text" placeholder="新店國小">
+            </div>
+          </div>
+          <div class="">
+            <label for="directionGo" class="pure-radio">
+              <input id="directionGo" type="radio" name="direction" value="go" checked>
+              Go
+            </label>
+            <label for="directionBack" class="pure-radio">
+              <input id="directionBack" type="radio" name="direction" value="back">
+              Back
+            </label>
+          </div>
+        <input id="addBus" type="button" class="submit pure-button" onclick="add_bus()" value="Add" />
+        <div id="busNameList"></div>
+        <hr size="1" />
+        <input type="submit" id="save" class="submit pure-button pure-button-primary" value="Save & Apply">
+        </div>
+      </form>
+
+      <hr size="1" />
+      <small>see documentation on <a href="https://github.com/imZack/pebble-taipei-bus">github</a></small><br>
+    </div>
+
+    
+  </body>
+</html>
